@@ -37,7 +37,7 @@
       --border-focus: #818cf8;
       --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
       --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.07), 0 2px 4px -2px rgb(0 0 0 / 0.07);
-      --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+      --shadow-lg: 0 10px 25px -3px rgb(0 0 0 / 0.15), 0 4px 6px -4px rgb(0 0 0 / 0.1);
       --radius: 12px;
       
       /* フォントスタック */
@@ -171,7 +171,7 @@
       margin-bottom: 0.75rem;
     }
 
-    /* ★独自フォント適用: 単語カードの見出し */
+    /* 単語カードの見出し */
     .word-title {
       font-family: var(--font-conlang);
       font-size: 1.6rem;
@@ -181,7 +181,7 @@
       word-break: break-word;
     }
 
-    /* 発音記号（通常フォント） */
+    /* 発音記号 */
     .word-pronunciation {
       font-family: monospace, var(--font-ui);
       font-size: 0.85rem;
@@ -275,15 +275,17 @@
       to { transform: rotate(360deg); }
     }
 
-    /* モーダル */
+    /* ==========================================
+       ★改修: 例文モーダル（ゆったり見やすいUI）
+       ========================================== */
     .modal-overlay {
       position: fixed;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
-      background: rgba(15, 23, 42, 0.45);
-      backdrop-filter: blur(4px);
+      background: rgba(15, 23, 42, 0.5);
+      backdrop-filter: blur(5px);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -291,7 +293,7 @@
       opacity: 0;
       pointer-events: none;
       transition: opacity 0.2s ease;
-      padding: 1rem;
+      padding: 1.25rem;
     }
 
     .modal-overlay.active {
@@ -301,13 +303,15 @@
 
     .modal-card {
       background: var(--card-bg);
-      border-radius: 16px;
+      border-radius: 18px;
       box-shadow: var(--shadow-lg);
-      width: 100%;
-      max-width: 480px;
-      padding: 1.5rem;
+      width: 92%;
+      max-width: 600px;
+      max-height: 85vh;
+      overflow-y: auto;
+      padding: 2.25rem 2rem;
       position: relative;
-      transform: translateY(12px) scale(0.98);
+      transform: translateY(14px) scale(0.98);
       transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
@@ -317,17 +321,18 @@
 
     .modal-close-btn {
       position: absolute;
-      top: 1rem;
-      right: 1rem;
+      top: 1.25rem;
+      right: 1.25rem;
       background: none;
       border: none;
       color: var(--text-muted);
       cursor: pointer;
-      padding: 0.25rem;
-      border-radius: 6px;
+      padding: 0.35rem;
+      border-radius: 8px;
       display: flex;
       align-items: center;
       justify-content: center;
+      transition: background-color 0.2s, color 0.2s;
     }
 
     .modal-close-btn:hover {
@@ -336,58 +341,90 @@
     }
 
     .modal-header {
-      margin-bottom: 1rem;
+      margin-bottom: 1.25rem;
+      padding-right: 2rem; /* 閉じるボタンとの重なり防止 */
     }
 
     .modal-badge {
-      font-size: 0.75rem;
+      font-size: 0.8rem;
       font-weight: 600;
       background: var(--primary-light);
       color: var(--primary);
-      padding: 0.15rem 0.5rem;
+      padding: 0.2rem 0.65rem;
       border-radius: 9999px;
       display: inline-block;
-      margin-bottom: 0.35rem;
+      margin-bottom: 0.5rem;
     }
 
-    /* ★独自フォント適用: モーダル内の単語 */
+    /* ★モーダル内の単語（大きく強調） */
     .modal-word {
       font-family: var(--font-conlang);
-      font-size: 1.5rem;
+      font-size: 1.9rem;
       line-height: 1.3;
+      letter-spacing: 0.02em;
       color: #0f172a;
+      word-break: break-word;
     }
 
+    /* ★意味ラベル（視認性UP） */
     .modal-meaning-label {
-      font-size: 0.85rem;
-      color: var(--text-muted);
-      margin-top: 0.3rem;
+      font-size: 0.95rem;
+      color: #475569;
+      margin-top: 0.35rem;
     }
 
+    /* ★例文ボックス（余白を拡張） */
     .modal-content-box {
       background: #f8fafc;
       border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 1rem;
-      margin-top: 0.75rem;
+      border-radius: 12px;
+      padding: 1.5rem 1.5rem 1.6rem;
+      margin-top: 1rem;
     }
 
-    /* ★独自フォント適用: モーダル内の人工言語例文 */
+    /* ★人工言語の例文（大きく読みやすく行間をゆったり確保） */
     .example-lang {
       font-family: var(--font-conlang);
-      font-size: 1.25rem;
-      line-height: 1.4;
-      color: #1e293b;
-      margin-bottom: 0.45rem;
+      font-size: 1.6rem;
+      line-height: 1.65;
+      letter-spacing: 0.02em;
+      color: #0f172a;
+      margin-bottom: 1rem;
       word-break: break-word;
     }
 
-    /* 日本語訳（通常フォント） */
+    /* ★日本語訳（読みやすいサイズ・十分なコントラスト・点線区切り） */
     .example-ja {
       font-family: var(--font-ui);
-      font-size: 0.9rem;
-      color: #475569;
+      font-size: 1.05rem;
+      line-height: 1.6;
+      color: #334155;
       word-break: break-word;
+      padding-top: 0.85rem;
+      border-top: 1px dashed #cbd5e1;
+    }
+
+    /* スマートフォン向け微調整 */
+    @media (max-width: 640px) {
+      .modal-card {
+        width: 95%;
+        padding: 1.75rem 1.25rem 1.5rem;
+      }
+      .modal-word {
+        font-size: 1.65rem;
+      }
+      .modal-content-box {
+        padding: 1.15rem 1rem 1.25rem;
+      }
+      .example-lang {
+        font-size: 1.35rem;
+        line-height: 1.55;
+        margin-bottom: 0.75rem;
+      }
+      .example-ja {
+        font-size: 0.95rem;
+        padding-top: 0.75rem;
+      }
     }
   </style>
 </head>
@@ -426,7 +463,7 @@
   <div id="exampleModal" class="modal-overlay" role="dialog" aria-modal="true" aria-hidden="true">
     <div class="modal-card">
       <button id="modalCloseBtn" class="modal-close-btn" aria-label="閉じる">
-        <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg width="22" height="22" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
         </svg>
       </button>
