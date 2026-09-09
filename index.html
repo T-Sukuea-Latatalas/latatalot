@@ -497,7 +497,7 @@ tara,/ta'ra/,大地,Tara grandi.,大地は広い。,,,,,,`;
     async function fetchDictionaryData() {
       try {
         let csvText = '';
-        if (SPREADSHEET_CSV_URL && SPREADSHEET_CSV_URL.trim() !== "https://docs.google.com/spreadsheets/d/e/2PACX-1vT8zvVHi5-is7GFyYU_-0wxzsxo37Ix2g_pNmBomqqZ8EQT8iVZxpW0JhFjs2o7yrG4ogVf7svjnnTw/pubhtml?gid=0&single=true") {
+        if (SPREADSHEET_CSV_URL && SPREADSHEET_CSV_URL.trim() !== "") {
           const res = await fetch(SPREADSHEET_CSV_URL);
           if (!res.ok) throw new Error(`HTTP Error: ${res.status}`);
           csvText = await res.text();
