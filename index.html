@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>人工言語 辞書 (Conlang Dictionary)</title>
   
-  <!-- Google Fonts -->
+  <!-- Google Fonts (UI・日本語用) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
@@ -14,6 +14,17 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 
   <style>
+    /* ==========================================
+       独自フォントの読み込み設定
+       ========================================== */
+    @font-face {
+      font-family: 'ConlangFont';
+      src: url('./Font_lttl3-Regular.ttf') format('truetype');
+      font-weight: normal;
+      font-style: normal;
+      font-display: swap;
+    }
+
     :root {
       --primary: #4f46e5;
       --primary-hover: #4338ca;
@@ -28,6 +39,10 @@
       --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.07), 0 2px 4px -2px rgb(0 0 0 / 0.07);
       --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
       --radius: 12px;
+      
+      /* フォントスタック */
+      --font-conlang: 'ConlangFont', 'Inter', sans-serif;
+      --font-ui: 'Inter', 'Noto Sans JP', sans-serif;
     }
 
     * {
@@ -37,7 +52,7 @@
     }
 
     body {
-      font-family: 'Inter', 'Noto Sans JP', sans-serif;
+      font-family: var(--font-ui);
       background-color: var(--bg);
       color: var(--text-main);
       line-height: 1.6;
@@ -107,6 +122,7 @@
       outline: none;
       transition: all 0.2s ease;
       background-color: #f8fafc;
+      font-family: var(--font-ui);
     }
 
     .search-input:focus {
@@ -155,19 +171,22 @@
       margin-bottom: 0.75rem;
     }
 
+    /* ★独自フォント適用: 単語カードの見出し */
     .word-title {
-      font-size: 1.4rem;
-      font-weight: 700;
+      font-family: var(--font-conlang);
+      font-size: 1.6rem;
+      line-height: 1.3;
+      letter-spacing: 0.02em;
       color: #0f172a;
-      letter-spacing: -0.01em;
       word-break: break-word;
     }
 
+    /* 発音記号（通常フォント） */
     .word-pronunciation {
+      font-family: monospace, var(--font-ui);
       font-size: 0.85rem;
       color: var(--text-muted);
-      font-family: monospace, sans-serif;
-      margin-top: 0.2rem;
+      margin-top: 0.25rem;
     }
 
     /* 意味リスト */
@@ -226,6 +245,7 @@
       cursor: pointer;
       transition: all 0.2s;
       white-space: nowrap;
+      font-family: var(--font-ui);
     }
 
     .btn-example:hover {
@@ -330,16 +350,18 @@
       margin-bottom: 0.35rem;
     }
 
+    /* ★独自フォント適用: モーダル内の単語 */
     .modal-word {
-      font-size: 1.25rem;
-      font-weight: 700;
+      font-family: var(--font-conlang);
+      font-size: 1.5rem;
+      line-height: 1.3;
       color: #0f172a;
     }
 
     .modal-meaning-label {
       font-size: 0.85rem;
       color: var(--text-muted);
-      margin-top: 0.2rem;
+      margin-top: 0.3rem;
     }
 
     .modal-content-box {
@@ -350,15 +372,19 @@
       margin-top: 0.75rem;
     }
 
+    /* ★独自フォント適用: モーダル内の人工言語例文 */
     .example-lang {
-      font-size: 1.05rem;
-      font-weight: 600;
+      font-family: var(--font-conlang);
+      font-size: 1.25rem;
+      line-height: 1.4;
       color: #1e293b;
-      margin-bottom: 0.35rem;
+      margin-bottom: 0.45rem;
       word-break: break-word;
     }
 
+    /* 日本語訳（通常フォント） */
     .example-ja {
+      font-family: var(--font-ui);
       font-size: 0.9rem;
       color: #475569;
       word-break: break-word;
@@ -420,15 +446,18 @@
     // ==========================================
     // 設定: GoogleスプレッドシートのCSV公開URL
     // ==========================================
-    const SPREADSHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vT8zvVHi5-is7GFyYU_-0wxzsxo37Ix2g_pNmBomqqZ8EQT8iVZxpW0JhFjs2o7yrG4ogVf7svjnnTw/pub?gid=0&single=true&output=csv";
+    const SPREADSHEET_CSV_URL = "";
 
-    // サンプルデータ（meaning4まで入った例）
-    const DEMO_CSV_DATA = `word,pronunciation,meaning1,example_lang1,example_ja1,meaning2,example_lang2,example_ja2,meaning3,example_lang3,example_ja3,meaning4,example_lang4,example_ja4
-elena,/e'le.na/,太陽,Elena luma sora.,太陽が空を照らす。,光,Elena no vis.,光が見える。,日和,,,エネルギー,Elena plen.,エネルギーに満ちている。
-solas,/so'las/,平和,Solas viva ton.,私たちは平和に生きる。,,,,,,,,,,
-luma,/lu'ma/,輝く,Kael luma.,星が輝いている。,照らす,,,,,,,,
-kael,/ka.el/,星,Kaelen noxi.,夜空に星がある。,,,,,,,,,,
-viva,/vi'va/,生きる,Ton viva solas.,私たちは平和に生きる。,,,,,,,,,,`;
+    // サンプルデータ
+    const DEMO_CSV_DATA = `word,pronunciation,meaning1,example_lang1,example_ja1,meaning2,example_lang2,example_ja2,meaning3,example_lang3,example_ja3
+elena,/e'le.na/,太陽,Elena luma sora.,太陽が空を照らす。,光,Elena no vis.,光が見える。,,
+solas,/so'las/,平和,Solas viva ton.,私たちは平和に生きる。,,,,,,
+luma,/lu'ma/,輝く,Kael luma.,星が輝いている。,照らす,,,,
+kael,/ka.el/,星,Kaelen noxi.,夜空に星がある。,,,,,,
+viva,/vi'va/,生きる,Ton viva solas.,私たちは平和に生きる。,,,,,,
+noxi,/nok'si/,夜,Noxi vana.,夜が訪れる。,闇,,,,
+mora,/mo'ra/,水,Mora pura.,水が澄んでいる。,川,,,,
+tara,/ta'ra/,大地,Tara grandi.,大地は広い。,,,,,,`;
 
     let allWords = [];
     let currentWords = [];
@@ -497,7 +526,7 @@ viva,/vi'va/,生きる,Ton viva solas.,私たちは平和に生きる。,,,,,,,,
       }
     }
 
-    // ★何個でも意味・例文を読み込める処理
+    // 意味・例文の無制限追加に対応
     function processWords(rawRows) {
       const validWords = [];
 
@@ -505,13 +534,12 @@ viva,/vi'va/,生きる,Ton viva solas.,私たちは平和に生きる。,,,,,,,,
         const word = (row.word || '').trim();
         const meaning1 = (row.meaning1 || '').trim();
 
-        // 必須チェック: word と meaning1 があるもののみ
         if (!word || !meaning1) return;
 
         const pronunciation = (row.pronunciation || '').trim();
         const meanings = [];
 
-        // 行に存在するすべての "meaning[数字]" のキーを抽出して番号順にソート
+        // 行内の "meaning[数字]" カラムをすべて検出
         const meaningKeys = Object.keys(row)
           .filter(k => /^meaning\d+$/.test(k))
           .sort((a, b) => {
@@ -520,7 +548,6 @@ viva,/vi'va/,生きる,Ton viva solas.,私たちは平和に生きる。,,,,,,,,
             return numA - numB;
           });
 
-        // 検出された意味キーを順次追加（上限なし）
         meaningKeys.forEach(key => {
           const num = key.replace('meaning', '');
           const m = (row[key] || '').trim();
@@ -544,7 +571,7 @@ viva,/vi'va/,生きる,Ton viva solas.,私たちは平和に生きる。,,,,,,,,
         });
       });
 
-      // 単語の辞書順（A-Z）で自動ソート
+      // アルファベット順でソート
       validWords.sort((a, b) => a.word.localeCompare(b.word, 'en', { sensitivity: 'base' }));
 
       allWords = validWords;
