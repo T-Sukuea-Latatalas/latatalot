@@ -3,13 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>人工言語 辞書 (Conlang Dictionary)</title>
+  <title>ARCHAIC CODEX TERMINAL // 人工言語古文書</title>
   
-  <!-- Google Fonts (UI・日本語用) -->
+  <!-- Google Fonts: 荘厳な古代碑文体, 中世古文書体, 活版印刷調の和文 -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=MedievalSharp&family=Share+Tech+Mono&family=Shippori+Mincho:wght@400;600;700;800&display=swap" rel="stylesheet">
   
+  <!-- Font Awesome CDN -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
   <!-- PapaParse (CSVパーサー) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 
@@ -26,23 +29,34 @@
     }
 
     :root {
-      --primary: #4f46e5;
-      --primary-hover: #4338ca;
-      --primary-light: #eef2ff;
-      --bg: #f8fafc;
-      --card-bg: #ffffff;
-      --text-main: #0f172a;
-      --text-muted: #64748b;
-      --border: #e2e8f0;
-      --border-focus: #818cf8;
-      --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-      --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.07), 0 2px 4px -2px rgb(0 0 0 / 0.07);
-      --shadow-lg: 0 10px 25px -3px rgb(0 0 0 / 0.15), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-      --radius: 12px;
+      /* アンティーク＆スチームパンク調 パレット */
+      --bg-void: #090705;
+      --bg-leather: #140f0a;
+      --bg-parchment-dark: #1b150e;
+      --bg-parchment-card: #221b12;
       
+      /* 古美金・真鍮・ブロンズ */
+      --brass-bright: #fae19c;
+      --brass-base: #c79d4c;
+      --brass-dark: #6e501e;
+      --brass-shadow: #33240a;
+
+      /* 燐光・琥珀（かすかな電脳魔導要素） */
+      --amber-glow: #e09322;
+      --aether-glow: #38bdf8;
+      
+      /* テキストカラー（羊皮紙・金箔インク） */
+      --text-gold: #fdf3d6;
+      --text-parchment: #e0d0b6;
+      --text-muted: #8f7d67;
+      --text-dim: #635443;
+
       /* フォントスタック */
-      --font-conlang: 'ConlangFont', 'Inter', sans-serif;
-      --font-ui: 'Inter', 'Noto Sans JP', sans-serif;
+      --font-conlang: 'ConlangFont', serif;
+      --font-ancient: 'Cinzel Decorative', 'MedievalSharp', serif;
+      --font-medieval: 'MedievalSharp', cursive;
+      --font-ui: 'Shippori Mincho', serif;
+      --font-mono: 'Share Tech Mono', monospace;
     }
 
     * {
@@ -51,51 +65,141 @@
       padding: 0;
     }
 
+    /* 経年劣化した革装丁＆羊皮紙の暗がり背景 */
     body {
+      background-color: var(--bg-void);
+      background-image: 
+        radial-gradient(ellipse at 50% 15%, rgba(199, 157, 76, 0.12) 0%, transparent 65%),
+        radial-gradient(circle at 15% 85%, rgba(110, 80, 30, 0.2) 0%, transparent 50%),
+        radial-gradient(circle at 85% 85%, rgba(14, 11, 7, 0.9) 0%, transparent 60%),
+        repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(0, 0, 0, 0.3) 3px, rgba(0, 0, 0, 0.3) 6px);
+      color: var(--text-parchment);
       font-family: var(--font-ui);
-      background-color: var(--bg);
-      color: var(--text-main);
-      line-height: 1.6;
-      padding: 2rem 1rem 4rem;
+      line-height: 1.7;
+      padding: 2.5rem 1rem 6rem;
       min-height: 100vh;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* 周囲の煤け・ビネット（焼き込み効果） */
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      box-shadow: inset 0 0 120px rgba(0, 0, 0, 0.95);
+      pointer-events: none;
+      z-index: 999;
     }
 
     .container {
-      max-width: 960px;
+      max-width: 1080px;
       margin: 0 auto;
+      position: relative;
+      z-index: 1;
     }
 
-    /* ヘッダー */
+    /* ==========================================
+       ヘッダー: 彫金真鍮プレート ＆ 錬金術の銘板
+       ========================================== */
     header {
       text-align: center;
-      margin-bottom: 2.5rem;
+      margin-bottom: 3.5rem;
+      padding: 1rem 0.5rem;
+    }
+
+    .header-plaque {
+      display: inline-block;
+      position: relative;
+      padding: 2.2rem 3.5rem 2rem;
+      background: 
+        radial-gradient(circle at 50% 0%, rgba(199, 157, 76, 0.15) 0%, transparent 70%),
+        linear-gradient(180deg, #251d14 0%, #17120c 100%);
+      border: 2px solid var(--brass-base);
+      outline: 1px solid var(--brass-dark);
+      outline-offset: -7px;
+      box-shadow: 
+        0 15px 40px rgba(0, 0, 0, 0.9),
+        inset 0 0 35px rgba(0, 0, 0, 0.8),
+        0 0 20px rgba(199, 157, 76, 0.25);
+    }
+
+    /* 真鍮プレートの四隅の鋲（リベット） */
+    .rivet {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      background: radial-gradient(circle at 35% 35%, var(--brass-bright), var(--brass-shadow));
+      border-radius: 50%;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.9), inset 0 0 1px #000;
+    }
+    .rivet.tl { top: 12px; left: 12px; }
+    .rivet.tr { top: 12px; right: 12px; }
+    .rivet.bl { bottom: 12px; left: 12px; }
+    .rivet.br { bottom: 12px; right: 12px; }
+
+    .header-sub-tag {
+      font-family: var(--font-ancient);
+      color: var(--brass-base);
+      font-size: 0.85rem;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      margin-bottom: 0.6rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+    }
+
+    .header-sub-tag::before,
+    .header-sub-tag::after {
+      content: "§ ❖ §";
+      font-size: 0.75rem;
+      color: var(--brass-dark);
+      letter-spacing: 0.2em;
     }
 
     header h1 {
-      font-size: 2rem;
-      font-weight: 700;
-      letter-spacing: -0.02em;
-      color: #1e293b;
-      margin-bottom: 0.5rem;
+      font-family: var(--font-ancient);
+      font-size: clamp(2rem, 5vw, 3.2rem);
+      font-weight: 900;
+      letter-spacing: 0.12em;
+      background: linear-gradient(180deg, #fff9e6 0%, var(--brass-bright) 40%, var(--brass-base) 85%, #593f14 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      filter: drop-shadow(0 3px 10px rgba(0, 0, 0, 0.95));
+      margin-bottom: 0.4rem;
     }
 
-    header p {
+    .header-desc {
+      font-family: var(--font-medieval);
       color: var(--text-muted);
-      font-size: 0.95rem;
+      font-size: 1.05rem;
+      letter-spacing: 0.15em;
+      border-top: 1px solid rgba(199, 157, 76, 0.3);
+      padding-top: 0.6rem;
+      margin-top: 0.4rem;
     }
 
-    /* 検索バーエリア */
+    /* ==========================================
+       操作コンソール（真鍮と革の検索書見台）
+       ========================================== */
     .search-section {
-      background: var(--card-bg);
-      padding: 1.25rem;
-      border-radius: var(--radius);
-      box-shadow: var(--shadow-sm);
-      border: 1px solid var(--border);
-      margin-bottom: 1.5rem;
+      background: 
+        radial-gradient(circle at 50% 100%, rgba(199, 157, 76, 0.08) 0%, transparent 60%),
+        linear-gradient(180deg, #201912 0%, #15100a 100%);
+      padding: 1.5rem 1.8rem;
+      margin-bottom: 3.5rem;
       position: sticky;
       top: 1rem;
-      z-index: 10;
-      backdrop-filter: blur(8px);
+      z-index: 50;
+      backdrop-filter: blur(10px);
+      border: 2px solid var(--brass-dark);
+      border-top: 3px solid var(--brass-base);
+      outline: 1px solid rgba(0,0,0,0.8);
+      box-shadow: 
+        0 12px 35px rgba(0, 0, 0, 0.9),
+        0 0 20px rgba(199, 157, 76, 0.15);
     }
 
     .search-box {
@@ -106,87 +210,173 @@
 
     .search-icon {
       position: absolute;
-      left: 1rem;
-      width: 20px;
-      height: 20px;
-      color: var(--text-muted);
+      left: 1.3rem;
+      font-size: 1.2rem;
+      color: var(--brass-base);
+      text-shadow: 0 0 6px var(--amber-glow);
       pointer-events: none;
     }
 
     .search-input {
       width: 100%;
-      padding: 0.85rem 1rem 0.85rem 2.75rem;
-      font-size: 1rem;
-      border: 1.5px solid var(--border);
-      border-radius: 8px;
-      outline: none;
-      transition: all 0.2s ease;
-      background-color: #f8fafc;
+      padding: 1rem 1.2rem 1rem 3.5rem;
+      font-size: 1.1rem;
+      background: #0d0a07;
+      border: 1px solid var(--brass-dark);
+      box-shadow: inset 0 3px 10px rgba(0,0,0,0.9);
+      color: var(--text-gold);
       font-family: var(--font-ui);
+      letter-spacing: 0.05em;
+      outline: none;
+      transition: all 0.3s;
+    }
+
+    .search-input::placeholder {
+      color: var(--text-dim);
+      font-style: italic;
+      letter-spacing: 0.03em;
     }
 
     .search-input:focus {
-      background-color: #fff;
-      border-color: var(--border-focus);
-      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+      border-color: var(--brass-bright);
+      box-shadow: 
+        inset 0 3px 10px rgba(0,0,0,0.9),
+        0 0 15px rgba(199, 157, 76, 0.4);
     }
 
     .search-meta {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-top: 0.75rem;
+      margin-top: 0.85rem;
       font-size: 0.85rem;
       color: var(--text-muted);
-      padding: 0 0.25rem;
+      border-top: 1px dashed rgba(199, 157, 76, 0.2);
+      padding-top: 0.6rem;
+      font-family: var(--font-ancient);
+      letter-spacing: 0.08em;
     }
 
-    /* 単語一覧グリッド */
+    .search-meta #resultCount {
+      color: var(--brass-bright);
+    }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.8rem;
+    }
+
+    /* ==========================================
+       単語グリッド: 羊皮紙の断片と真鍮の刻板
+       ========================================== */
     .word-list {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
-      gap: 1.25rem;
+      grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+      gap: 2.5rem 2rem;
+      perspective: 1200px;
     }
 
-    /* 単語カード */
+    /* カード本体（焼けた羊皮紙＋真鍮外枠） */
     .word-card {
-      background: var(--card-bg);
-      border-radius: var(--radius);
-      border: 1px solid var(--border);
-      padding: 1.25rem;
-      box-shadow: var(--shadow-sm);
-      transition: transform 0.15s ease, box-shadow 0.15s ease;
+      background: 
+        radial-gradient(circle at 0% 0%, rgba(199, 157, 76, 0.1) 0%, transparent 60%),
+        radial-gradient(circle at 100% 100%, rgba(0, 0, 0, 0.7) 0%, transparent 60%),
+        linear-gradient(160deg, var(--bg-parchment-card) 0%, #15100a 100%);
+      border: 1px solid var(--brass-dark);
+      padding: 1.8rem 1.6rem;
+      position: relative;
       display: flex;
       flex-direction: column;
+      box-shadow: 
+        0 12px 30px rgba(0, 0, 0, 0.85),
+        inset 0 0 25px rgba(0, 0, 0, 0.6);
+      transition: all 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
     }
+
+    /* 古書のような内側飾り枠 */
+    .word-card::before {
+      content: "";
+      position: absolute;
+      inset: 6px;
+      border: 1px solid rgba(199, 157, 76, 0.3);
+      pointer-events: none;
+      transition: all 0.3s;
+    }
+
+    /* 四隅の古風なコーナー装飾（✤） */
+    .word-card::after {
+      content: "✤";
+      position: absolute;
+      bottom: 9px;
+      right: 9px;
+      font-size: 0.85rem;
+      color: var(--brass-dark);
+      transition: all 0.3s;
+    }
+
+    /* ランダムな傾き演出（散らばる古文書） */
+    .word-card:nth-child(4n+1) { transform: rotate(-1.1deg); }
+    .word-card:nth-child(4n+2) { transform: rotate(1deg); }
+    .word-card:nth-child(4n+3) { transform: rotate(-1.4deg); }
+    .word-card:nth-child(4n+4) { transform: rotate(0.8deg); }
 
     .word-card:hover {
-      transform: translateY(-2px);
-      box-shadow: var(--shadow-md);
+      transform: rotate(0deg) translateY(-8px) scale(1.02);
+      border-color: var(--brass-base);
+      box-shadow: 
+        0 20px 45px rgba(0, 0, 0, 0.95),
+        0 0 25px rgba(199, 157, 76, 0.3),
+        inset 0 0 25px rgba(199, 157, 76, 0.15);
+      z-index: 10;
     }
 
+    .word-card:hover::before {
+      border-color: var(--brass-base);
+    }
+
+    .word-card:hover::after {
+      color: var(--brass-bright);
+      text-shadow: 0 0 8px var(--amber-glow);
+    }
+
+    /* 単語ヘッダー */
     .word-header {
-      border-bottom: 1px solid #f1f5f9;
-      padding-bottom: 0.75rem;
-      margin-bottom: 0.75rem;
+      border-bottom: 2px solid var(--brass-dark);
+      padding-bottom: 0.9rem;
+      margin-bottom: 1.1rem;
+      position: relative;
     }
 
-    /* 単語カードの見出し */
+    /* ★独自フォント適用: 単語カードの見出し */
     .word-title {
       font-family: var(--font-conlang);
-      font-size: 1.6rem;
-      line-height: 1.3;
-      letter-spacing: 0.02em;
-      color: #0f172a;
+      font-size: 1.95rem;
+      line-height: 1.25;
+      letter-spacing: 0.04em;
+      color: var(--text-gold);
+      text-shadow: 
+        0 2px 5px rgba(0, 0, 0, 0.9),
+        0 0 12px rgba(199, 157, 76, 0.4);
       word-break: break-word;
     }
 
-    /* 発音記号 */
+    /* 発音記号（羊皮紙のインク注記） */
     .word-pronunciation {
-      font-family: monospace, var(--font-ui);
-      font-size: 0.85rem;
-      color: var(--text-muted);
-      margin-top: 0.25rem;
+      font-family: var(--font-mono);
+      font-size: 0.9rem;
+      color: var(--brass-base);
+      letter-spacing: 0.08em;
+      margin-top: 0.4rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .word-pronunciation::before {
+      content: "―";
+      color: var(--brass-dark);
     }
 
     /* 意味リスト */
@@ -194,30 +384,35 @@
       list-style: none;
       display: flex;
       flex-direction: column;
-      gap: 0.75rem;
+      gap: 1rem;
       flex-grow: 1;
     }
 
     .meaning-item {
       display: flex;
       align-items: flex-start;
-      gap: 0.5rem;
-      font-size: 0.95rem;
+      gap: 0.75rem;
+      font-size: 1rem;
+      line-height: 1.6;
     }
 
+    /* 錬金術の印章風番号 */
     .meaning-num {
-      background: #f1f5f9;
-      color: var(--text-muted);
+      font-family: var(--font-ancient);
+      background: radial-gradient(circle, var(--brass-shadow) 0%, #110d08 100%);
+      border: 1px solid var(--brass-base);
+      color: var(--brass-bright);
       font-size: 0.75rem;
-      font-weight: 600;
-      width: 20px;
-      height: 20px;
+      font-weight: 700;
+      width: 24px;
+      height: 24px;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      border-radius: 50%;
       flex-shrink: 0;
       margin-top: 0.2rem;
+      border-radius: 50%;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.8);
     }
 
     .meaning-body {
@@ -225,74 +420,103 @@
       display: flex;
       align-items: baseline;
       justify-content: space-between;
-      gap: 0.5rem;
+      gap: 0.6rem;
       flex-wrap: wrap;
     }
 
     .meaning-text {
-      color: #334155;
+      color: var(--text-parchment);
+      font-weight: 600;
     }
 
-    /* 例文ボタン */
+    /* 例文ボタン（真鍮の封蝋・タグ風） */
     .btn-example {
-      background: var(--primary-light);
-      color: var(--primary);
-      border: none;
-      border-radius: 6px;
-      padding: 0.2rem 0.55rem;
-      font-size: 0.75rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.2s;
-      white-space: nowrap;
+      background: linear-gradient(180deg, #7c5d26 0%, #4a3411 100%);
+      color: var(--brass-bright);
+      border: 1px solid var(--brass-bright);
+      padding: 0.25rem 0.75rem;
+      font-size: 0.78rem;
       font-family: var(--font-ui);
+      letter-spacing: 0.05em;
+      cursor: pointer;
+      transition: all 0.25s;
+      white-space: nowrap;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.6);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .btn-example i {
+      font-size: 0.75rem;
+      color: var(--brass-bright);
     }
 
     .btn-example:hover {
-      background: #e0e7ff;
-      color: var(--primary-hover);
+      background: var(--brass-base);
+      color: #120d08;
+      border-color: #fff;
+      box-shadow: 0 0 12px rgba(199, 157, 76, 0.7);
     }
 
-    /* ローディング & エラー / 空表示 */
+    .btn-example:hover i {
+      color: #120d08;
+    }
+
+    /* ローディング & エラー表示 */
     .state-message {
       text-align: center;
-      padding: 4rem 1rem;
+      padding: 5rem 1rem;
       color: var(--text-muted);
+      font-family: var(--font-ancient);
+      letter-spacing: 0.1em;
       grid-column: 1 / -1;
     }
 
-    .spinner {
-      width: 36px;
-      height: 36px;
-      border: 3.5px solid #e2e8f0;
-      border-top-color: var(--primary);
+    /* 錬金術の羅針盤風スピナー */
+    .ancient-spinner {
+      width: 54px;
+      height: 54px;
+      margin: 0 auto 1.8rem;
+      border: 2px solid var(--brass-dark);
+      border-top: 2px solid var(--brass-bright);
+      border-bottom: 2px solid var(--brass-bright);
       border-radius: 50%;
-      animation: spin 0.8s linear infinite;
-      margin: 0 auto 1rem;
+      animation: spinGear 2s cubic-bezier(0.68, -0.55, 0.27, 1.55) infinite;
+      position: relative;
     }
 
-    @keyframes spin {
+    .ancient-spinner::after {
+      content: "✦";
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      color: var(--brass-base);
+    }
+
+    @keyframes spinGear {
       to { transform: rotate(360deg); }
     }
 
     /* ==========================================
-       ★改修: 例文モーダル（ゆったり見やすいUI）
+       例文モーダル: 紐解かれた羊皮紙の古文書
        ========================================== */
     .modal-overlay {
       position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(15, 23, 42, 0.5);
-      backdrop-filter: blur(5px);
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(4, 3, 2, 0.88);
+      backdrop-filter: blur(8px);
       display: flex;
       align-items: center;
       justify-content: center;
       z-index: 100;
       opacity: 0;
       pointer-events: none;
-      transition: opacity 0.2s ease;
+      transition: opacity 0.3s ease;
       padding: 1.25rem;
     }
 
@@ -302,128 +526,182 @@
     }
 
     .modal-card {
-      background: var(--card-bg);
-      border-radius: 18px;
-      box-shadow: var(--shadow-lg);
+      background: 
+        radial-gradient(circle at 50% 0%, rgba(199, 157, 76, 0.12) 0%, transparent 70%),
+        linear-gradient(180deg, #241d14 0%, #15110b 100%);
+      border: 3px double var(--brass-base);
+      outline: 1px solid var(--brass-dark);
+      outline-offset: -8px;
+      box-shadow: 
+        0 25px 70px rgba(0, 0, 0, 0.98),
+        inset 0 0 40px rgba(0, 0, 0, 0.8),
+        0 0 30px rgba(199, 157, 76, 0.2);
       width: 92%;
-      max-width: 600px;
+      max-width: 650px;
       max-height: 85vh;
       overflow-y: auto;
-      padding: 2.25rem 2rem;
+      padding: 2.6rem 2.4rem;
       position: relative;
-      transform: translateY(14px) scale(0.98);
-      transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      transform: translateY(20px) scale(0.96);
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
     .modal-overlay.active .modal-card {
       transform: translateY(0) scale(1);
     }
 
+    /* モーダル上部の装飾帯 */
+    .modal-top-bar {
+      font-family: var(--font-ancient);
+      font-size: 0.8rem;
+      color: var(--brass-base);
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      border-bottom: 1px solid rgba(199, 157, 76, 0.3);
+      padding-bottom: 0.5rem;
+      margin-bottom: 1.4rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
     .modal-close-btn {
-      position: absolute;
-      top: 1.25rem;
-      right: 1.25rem;
-      background: none;
-      border: none;
-      color: var(--text-muted);
+      background: #110d08;
+      border: 1px solid var(--brass-base);
+      color: var(--brass-bright);
       cursor: pointer;
-      padding: 0.35rem;
-      border-radius: 8px;
+      width: 32px;
+      height: 32px;
       display: flex;
       align-items: center;
       justify-content: center;
-      transition: background-color 0.2s, color 0.2s;
+      transition: all 0.2s;
     }
 
     .modal-close-btn:hover {
-      background: #f1f5f9;
-      color: var(--text-main);
+      background: var(--brass-base);
+      color: #090705;
+      box-shadow: 0 0 10px var(--brass-bright);
     }
 
     .modal-header {
-      margin-bottom: 1.25rem;
-      padding-right: 2rem; /* 閉じるボタンとの重なり防止 */
+      margin-bottom: 1.5rem;
     }
 
     .modal-badge {
-      font-size: 0.8rem;
-      font-weight: 600;
-      background: var(--primary-light);
-      color: var(--primary);
-      padding: 0.2rem 0.65rem;
-      border-radius: 9999px;
-      display: inline-block;
-      margin-bottom: 0.5rem;
+      font-family: var(--font-ancient);
+      font-size: 0.78rem;
+      letter-spacing: 0.12em;
+      background: rgba(199, 157, 76, 0.15);
+      border: 1px solid var(--brass-base);
+      color: var(--brass-bright);
+      padding: 0.25rem 0.8rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.7rem;
     }
 
-    /* ★モーダル内の単語（大きく強調） */
+    /* ★モーダル内の単語 */
     .modal-word {
       font-family: var(--font-conlang);
-      font-size: 1.9rem;
-      line-height: 1.3;
-      letter-spacing: 0.02em;
-      color: #0f172a;
+      font-size: 2.2rem;
+      line-height: 1.25;
+      letter-spacing: 0.04em;
+      color: var(--text-gold);
+      text-shadow: 
+        0 2px 8px rgba(0, 0, 0, 0.9),
+        0 0 15px rgba(199, 157, 76, 0.5);
       word-break: break-word;
     }
 
-    /* ★意味ラベル（視認性UP） */
     .modal-meaning-label {
-      font-size: 0.95rem;
-      color: #475569;
-      margin-top: 0.35rem;
+      font-size: 1.05rem;
+      color: var(--brass-bright);
+      margin-top: 0.45rem;
+      font-family: var(--font-ui);
     }
 
-    /* ★例文ボックス（余白を拡張） */
+    /* 例文ボックス（墨溜まりのある羊皮紙枠） */
     .modal-content-box {
-      background: #f8fafc;
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 1.5rem 1.5rem 1.6rem;
-      margin-top: 1rem;
+      background: #0f0c08;
+      border: 1px solid var(--brass-dark);
+      border-left: 4px solid var(--brass-base);
+      padding: 1.8rem 1.6rem;
+      margin-top: 1.2rem;
+      position: relative;
+      box-shadow: inset 0 0 25px rgba(0, 0, 0, 0.95);
     }
 
-    /* ★人工言語の例文（大きく読みやすく行間をゆったり確保） */
+    /* ★人工言語の例文（風格ある書体） */
     .example-lang {
       font-family: var(--font-conlang);
-      font-size: 1.6rem;
+      font-size: 1.85rem;
       line-height: 1.65;
-      letter-spacing: 0.02em;
-      color: #0f172a;
-      margin-bottom: 1rem;
+      letter-spacing: 0.03em;
+      color: #fff9e6;
+      margin-bottom: 1.3rem;
       word-break: break-word;
+      text-shadow: 0 0 12px rgba(199, 157, 76, 0.4);
     }
 
-    /* ★日本語訳（読みやすいサイズ・十分なコントラスト・点線区切り） */
+    /* 日本語訳（古文書の墨筆訳） */
     .example-ja {
       font-family: var(--font-ui);
-      font-size: 1.05rem;
-      line-height: 1.6;
-      color: #334155;
+      font-size: 1.1rem;
+      line-height: 1.8;
+      color: var(--text-parchment);
       word-break: break-word;
-      padding-top: 0.85rem;
-      border-top: 1px dashed #cbd5e1;
+      padding-top: 1.1rem;
+      border-top: 1px dashed rgba(199, 157, 76, 0.35);
+      position: relative;
     }
 
-    /* スマートフォン向け微調整 */
+    .example-ja::before {
+      content: "【 筆写解読録 】";
+      display: block;
+      font-family: var(--font-ancient);
+      font-size: 0.75rem;
+      color: var(--brass-base);
+      letter-spacing: 0.2em;
+      margin-bottom: 0.35rem;
+    }
+
+    /* スクロールバー装飾 */
+    ::-webkit-scrollbar {
+      width: 10px;
+    }
+    ::-webkit-scrollbar-track {
+      background: var(--bg-void);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: var(--brass-dark);
+      border: 2px solid var(--bg-void);
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--brass-base);
+    }
+
+    /* スマホ対応 */
     @media (max-width: 640px) {
+      .header-plaque {
+        padding: 1.5rem 1.8rem;
+      }
+      .word-list {
+        grid-template-columns: 1fr;
+        gap: 1.8rem;
+      }
+      .word-card {
+        transform: none !important;
+      }
       .modal-card {
-        width: 95%;
-        padding: 1.75rem 1.25rem 1.5rem;
+        padding: 1.8rem 1.4rem;
       }
       .modal-word {
-        font-size: 1.65rem;
-      }
-      .modal-content-box {
-        padding: 1.15rem 1rem 1.25rem;
+        font-size: 1.8rem;
       }
       .example-lang {
-        font-size: 1.35rem;
-        line-height: 1.55;
-        margin-bottom: 0.75rem;
-      }
-      .example-ja {
-        font-size: 0.95rem;
-        padding-top: 0.75rem;
+        font-size: 1.5rem;
       }
     }
   </style>
@@ -431,47 +709,62 @@
 <body>
 
   <div class="container">
+    <!-- ヘッダー（真鍮彫金プレート） -->
     <header>
-      <h1>人工言語 辞書</h1>
-      <p>Conlang Dictionary Database</p>
+      <div class="header-plaque">
+        <span class="rivet tl"></span>
+        <span class="rivet tr"></span>
+        <span class="rivet bl"></span>
+        <span class="rivet br"></span>
+        
+        <div class="header-sub-tag">
+          <span>LEXICON OBSCURA</span>
+        </div>
+        <h1>人工言語古文書</h1>
+        <p class="header-desc">ARCHAIC CONLANG MANUSCRIPT & LEXICON</p>
+      </div>
     </header>
 
-    <!-- 検索バー -->
+    <!-- 検索バー（真鍮と革の書見台） -->
     <div class="search-section">
       <div class="search-box">
-        <svg class="search-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-        </svg>
-        <input type="text" id="searchInput" class="search-input" placeholder="単語・発音・日本語で検索..." autocomplete="off">
+        <i class="fa-solid fa-feather-pointed search-icon"></i>
+        <input type="text" id="searchInput" class="search-input" placeholder="原語記号・発音・解読日本語で古文書を索く..." autocomplete="off">
       </div>
       <div class="search-meta">
-        <span id="resultCount">読み込み中...</span>
-        <span id="statusIndicator"></span>
+        <span id="resultCount">SCROLL LOADING...</span>
+        <span id="statusIndicator" class="status-badge"></span>
       </div>
     </div>
 
-    <!-- 単語カードコンテナ -->
+    <!-- 単語カード一覧 -->
     <main id="wordList" class="word-list">
       <div class="state-message">
-        <div class="spinner"></div>
-        <p>辞書データを取得しています...</p>
+        <div class="ancient-spinner"></div>
+        <p>深淵なる古文書を紐解いています...</p>
       </div>
     </main>
   </div>
 
-  <!-- 例文モーダル -->
+  <!-- 例文モーダル（古文書の書架・羊皮紙） -->
   <div id="exampleModal" class="modal-overlay" role="dialog" aria-modal="true" aria-hidden="true">
     <div class="modal-card">
-      <button id="modalCloseBtn" class="modal-close-btn" aria-label="閉じる">
-        <svg width="22" height="22" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-        </svg>
-      </button>
+      <div class="modal-top-bar">
+        <span><i class="fa-solid fa-scroll"></i> CODEX FRAGMENT EXCERPT</span>
+        <button id="modalCloseBtn" class="modal-close-btn" aria-label="閉じる">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      
       <div class="modal-header">
-        <span class="modal-badge">例文</span>
+        <div class="modal-badge">
+          <i class="fa-solid fa-book-bookmark"></i>
+          <span>INSCRIPTION NOTE</span>
+        </div>
         <div id="modalWord" class="modal-word"></div>
         <div id="modalMeaning" class="modal-meaning-label"></div>
       </div>
+      
       <div class="modal-content-box">
         <div id="modalExampleLang" class="example-lang"></div>
         <div id="modalExampleJa" class="example-ja"></div>
@@ -485,7 +778,7 @@
     // ==========================================
     const SPREADSHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vT8zvVHi5-is7GFyYU_-0wxzsxo37Ix2g_pNmBomqqZ8EQT8iVZxpW0JhFjs2o7yrG4ogVf7svjnnTw/pub?gid=0&single=true&output=csv";
 
-    // サンプルデータ
+    // サンプルデータ（フォールバック用）
     const DEMO_CSV_DATA = `word,pronunciation,meaning1,example_lang1,example_ja1,meaning2,example_lang2,example_ja2,meaning3,example_lang3,example_ja3
 elena,/e'le.na/,太陽,Elena luma sora.,太陽が空を照らす。,光,Elena no vis.,光が見える。,,
 solas,/so'las/,平和,Solas viva ton.,私たちは平和に生きる。,,,,,,
@@ -538,12 +831,10 @@ tara,/ta'ra/,大地,Tara grandi.,大地は広い。,,,,,,`;
           const res = await fetch(SPREADSHEET_CSV_URL);
           if (!res.ok) throw new Error(`HTTP Error: ${res.status}`);
           csvText = await res.text();
-          statusIndicator.textContent = '● 連携中';
-          statusIndicator.style.color = '#10b981';
+          statusIndicator.innerHTML = '<i class="fa-solid fa-link" style="color:var(--brass-bright);"></i> <span style="color:var(--brass-bright);">ARCHIVE CONNECTED</span>';
         } else {
           csvText = DEMO_CSV_DATA;
-          statusIndicator.textContent = '● デモデータ表示中';
-          statusIndicator.style.color = '#f59e0b';
+          statusIndicator.innerHTML = '<i class="fa-solid fa-scroll" style="color:var(--brass-base);"></i> <span style="color:var(--brass-base);">LOCAL CODEX</span>';
         }
 
         Papa.parse(csvText, {
@@ -553,12 +844,12 @@ tara,/ta'ra/,大地,Tara grandi.,大地は広い。,,,,,,`;
             processWords(results.data);
           },
           error: (err) => {
-            showError('CSVのパースに失敗しました: ' + err.message);
+            showError('古文書解読エラー: ' + err.message);
           }
         });
 
       } catch (err) {
-        showError('スプレッドシートの取得に失敗しました。URLと公開設定を確認してください。');
+        showError('古文書アーカイブの展開に失敗しました。接続設定を確認してください。');
         console.error(err);
       }
     }
@@ -576,7 +867,6 @@ tara,/ta'ra/,大地,Tara grandi.,大地は広い。,,,,,,`;
         const pronunciation = (row.pronunciation || '').trim();
         const meanings = [];
 
-        // 行内の "meaning[数字]" カラムをすべて検出
         const meaningKeys = Object.keys(row)
           .filter(k => /^meaning\d+$/.test(k))
           .sort((a, b) => {
@@ -608,7 +898,6 @@ tara,/ta'ra/,大地,Tara grandi.,大地は広い。,,,,,,`;
         });
       });
 
-      // アルファベット順でソート
       validWords.sort((a, b) => a.word.localeCompare(b.word, 'en', { sensitivity: 'base' }));
 
       allWords = validWords;
@@ -617,12 +906,13 @@ tara,/ta'ra/,大地,Tara grandi.,大地は広い。,,,,,,`;
 
     function renderWords(words) {
       currentWords = words;
-      resultCountEl.textContent = `${words.length} 件ヒット (全 ${allWords.length} 語)`;
+      resultCountEl.innerHTML = `<i class="fa-solid fa-feather"></i> 索出: ${words.length} / 総数: ${allWords.length}`;
 
       if (words.length === 0) {
         wordListEl.innerHTML = `
           <div class="state-message">
-            <p>一致する単語が見つかりませんでした。</p>
+            <i class="fa-solid fa-hourglass-end" style="font-size: 2rem; margin-bottom: 1rem; color: var(--text-dim); display:block;"></i>
+            <p>古文書に該当する語彙記録は見出せませんでした。</p>
           </div>
         `;
         return;
@@ -636,10 +926,10 @@ tara,/ta'ra/,大地,Tara grandi.,大地は広い。,,,,,,`;
         const meaningsHtml = item.meanings.map((m, mIdx) => {
           const numLabel = item.meanings.length > 1 
             ? `<span class="meaning-num">${mIdx + 1}</span>` 
-            : '';
+            : `<span class="meaning-num">§</span>`;
 
           const exampleBtn = m.hasExample 
-            ? `<button class="btn-example" onclick="openModal(${wordIdx}, ${mIdx})">例文</button>` 
+            ? `<button class="btn-example" onclick="openModal(${wordIdx}, ${mIdx})"><i class="fa-solid fa-feather-pointed"></i> 例文</button>` 
             : '';
 
           return `
@@ -694,9 +984,9 @@ tara,/ta'ra/,大地,Tara grandi.,大地は広い。,,,,,,`;
       if (!m) return;
 
       modalWord.textContent = item.word;
-      modalMeaning.textContent = `意味: ${m.meaning}`;
-      modalExampleLang.textContent = m.example_lang || '（人工言語例文なし）';
-      modalExampleJa.textContent = m.example_ja || '（日本語訳なし）';
+      modalMeaning.textContent = `【 原義 】 ${m.meaning}`;
+      modalExampleLang.textContent = m.example_lang || '（古文書に例文記録なし）';
+      modalExampleJa.textContent = m.example_ja || '（解読日本語訳なし）';
 
       modal.classList.add('active');
       modal.setAttribute('aria-hidden', 'false');
@@ -709,11 +999,12 @@ tara,/ta'ra/,大地,Tara grandi.,大地は広い。,,,,,,`;
 
     function showError(msg) {
       wordListEl.innerHTML = `
-        <div class="state-message" style="color: #ef4444;">
+        <div class="state-message" style="color: #c94a29;">
+          <i class="fa-solid fa-skull" style="font-size: 2rem; margin-bottom: 1rem; display:block;"></i>
           <p>${escapeHtml(msg)}</p>
         </div>
       `;
-      resultCountEl.textContent = '取得失敗';
+      resultCountEl.textContent = 'ERROR';
     }
 
     function escapeHtml(str) {
