@@ -5,6 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>人工言語 辞書</title>
   <style>
+    /* 人工言語用フォントの読み込み */
+    @font-face {
+      font-family: 'Font_lttl3';
+      src: url('Font_lttl3-Regular.ttf') format('truetype');
+      font-weight: normal;
+      font-style: normal;
+    }
+
     * {
       box-sizing: border-box;
       margin: 0;
@@ -173,10 +181,13 @@
       flex: 1;
     }
 
+    /* 単語部分に指定フォントを適用 */
     .word-text {
-      font-size: 1.3rem;
-      font-weight: 700;
+      font-family: 'Font_lttl3', sans-serif;
+      font-size: 1.5rem;
+      font-weight: normal;
       letter-spacing: 0.05em;
+      line-height: 1.2;
     }
 
     .preview-meanings {
@@ -276,7 +287,7 @@
       line-height: 1.5;
     }
 
-    /* 状態表示（ロード中・空など） */
+    /* 状態表示 */
     .status-message {
       text-align: center;
       padding: 60px 20px;
@@ -371,9 +382,8 @@
     const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT8zvVHi5-is7GFyYU_-0wxzsxo37Ix2g_pNmBomqqZ8EQT8iVZxpW0JhFjs2o7yrG4ogVf7svjnnTw/pub?gid=0&single=true&output=csv';
 
     let dictionary = [];
-    let currentSort = 'default'; // 'default' または 'abc'
+    let currentSort = 'default';
 
-    // CSVパース関数（改行・クォート・カンマ対応）
     function parseCSV(text) {
       const rows = [];
       let row = [];
@@ -416,7 +426,6 @@
       return rows;
     }
 
-    // データ読み込み＆同一スペルの統合
     async function loadData() {
       try {
         const res = await fetch(CSV_URL);
@@ -429,14 +438,12 @@
           return;
         }
 
-        // 1行目がヘッダー（「単語」など）の場合は除外
         let startIndex = 0;
         const firstCol = rows[0][0].toLowerCase();
         if (firstCol.includes('単語') || firstCol === 'word') {
           startIndex = 1;
         }
 
-        // 単語スペルごとに集約（出現順を保つため Map を使用）
         const wordMap = new Map();
         let originalOrder = 0;
 
@@ -449,7 +456,6 @@
 
           if (!word) continue;
 
-          // 大文字小文字の差異を同一視しつつ、表示用スペルは最初に登録されたものを保持
           const lookupKey = word.toLowerCase();
 
           if (!wordMap.has(lookupKey)) {
@@ -476,12 +482,10 @@
       }
     }
 
-    // 表示レンダリング
     function render() {
       const container = document.getElementById('word-list');
       const searchWord = document.getElementById('search-input').value.trim().toLowerCase();
 
-      // 検索フィルタリング
       let list = dictionary.filter(item => {
         if (!searchWord) return true;
         if (item.word.toLowerCase().includes(searchWord)) return true;
@@ -492,7 +496,6 @@
         );
       });
 
-      // 並び替え
       if (currentSort === 'abc') {
         list.sort((a, b) => a.word.localeCompare(b.word, 'en', { sensitivity: 'base' }));
       } else {
@@ -512,7 +515,6 @@
         const card = document.createElement('article');
         card.className = 'word-card';
 
-        // プレビュー表示用
         const previewHtml = item.senses.map((s, idx) => `
           <span class="preview-item">
             ${s.pos ? `<span class="preview-pos">${escapeHtml(s.pos)}</span>` : ''}
@@ -520,7 +522,6 @@
           </span>
         `).join('<span style="color:#666;">/</span>');
 
-        // 詳細展開部
         const sensesHtml = item.senses.map((s, idx) => `
           <div class="meaning-block">
             <div class="meaning-header">
@@ -538,7 +539,6 @@
               <span class="word-text">${escapeHtml(item.word)}</span>
               <div class="preview-meanings">${previewHtml}</div>
             </div>
-            <!-- 下向き矢印SVG -->
             <svg class="arrow-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2">
               <polyline points="6 9 12 15 18 9"></polyline>
             </svg>
@@ -548,7 +548,6 @@
           </div>
         `;
 
-        // 枠をクリックで詳細を展開
         card.addEventListener('click', () => {
           card.classList.toggle('open');
         });
@@ -572,7 +571,6 @@
         .replace(/'/g, '&#039;');
     }
 
-    // イベントリスナー
     document.getElementById('btn-default').addEventListener('click', () => {
       currentSort = 'default';
       document.getElementById('btn-default').classList.add('active');
@@ -591,7 +589,6 @@
       render();
     });
 
-    // 初期実行
     loadData();
   </script>
 </body>
