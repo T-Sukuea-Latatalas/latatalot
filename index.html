@@ -181,6 +181,14 @@
       flex: 1;
     }
 
+    /* 割り振った番号の表示（非表示にしたい場合は display: none; に変更） */
+    .word-id {
+      font-size: 0.8rem;
+      color: #888888;
+      font-family: monospace;
+      letter-spacing: 0.05em;
+    }
+
     /* 単語部分に指定フォントを適用 */
     .word-text {
       font-family: 'Font_lttl3', sans-serif;
@@ -327,7 +335,7 @@
       </div>
 
       <div class="switch-container">
-        <!-- スプレッドシート順 / ABC順 切替スイッチ -->
+        <!-- 番号順（登録順） / ABC順 切替スイッチ -->
         <div class="sort-switch" role="group" aria-label="並び順">
           <button id="btn-default" class="sort-btn active" type="button">
             <!-- リスト順SVG -->
@@ -363,7 +371,7 @@
           <circle cx="11" cy="11" r="8"></circle>
           <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
         </svg>
-        <input type="text" id="search-input" class="search-input" placeholder="単語・意味・品詞で検索...">
+        <input type="text" id="search-input" class="search-input" placeholder="単語・意味・品詞・番号で検索...">
       </div>
 
       <div class="word-count" id="count-display">0 語 表示中</div>
@@ -445,7 +453,7 @@
         }
 
         const wordMap = new Map();
-        let originalOrder = 0;
+        let rowOrder = 0;
 
         for (let i = startIndex; i < rows.length; i++) {
           const row = rows[i];
@@ -453,27 +461,44 @@
           const meaning = row[1] ? row[1].trim() : '';
           const pos = row[2] ? row[2].trim() : '';
           const detail = row[3] ? row[3].trim() : '';
+          const idStr = row[4] ? row[4].trim() : '';
 
           if (!word) continue;
 
+          // E列の番号を数値として読み取る（空欄や数値以外の場合は null）
+          const parsedId = (idStr !== '' && !isNaN(Number(idStr))) ? Number(idStr) : null;
+          const currentRowOrder = rowOrder++;
           const lookupKey = word.toLowerCase();
 
           if (!wordMap.has(lookupKey)) {
             wordMap.set(lookupKey, {
-              order: originalOrder++,
+              order: currentRowOrder,
+              id: parsedId,
               word: word,
               senses: []
             });
+          } else {
+            // 同じ単語が複数行ある場合、最小の番号を採用する
+            const entry = wordMap.get(lookupKey);
+            if (parsedId !== null && (entry.id === null || parsedId < entry.id)) {
+              entry.id = parsedId;
+            }
           }
 
           wordMap.get(lookupKey).senses.push({
             meaning,
             pos,
-            detail
+            detail,
+            senseOrder: parsedId !== null ? parsedId : (1000000 + currentRowOrder)
           });
         }
 
-        dictionary = Array.from(wordMap.values());
+        // 同じ単語内の複数の意味も番号順（例：5.1, 5.2）で固定する
+        dictionary = Array.from(wordMap.values()).map(item => {
+          item.senses.sort((a, b) => a.senseOrder - b.senseOrder);
+          return item;
+        });
+
         render();
 
       } catch (err) {
@@ -489,6 +514,7 @@
       let list = dictionary.filter(item => {
         if (!searchWord) return true;
         if (item.word.toLowerCase().includes(searchWord)) return true;
+        if (item.id !== null && (`#${item.id}`).includes(searchWord)) return true;
         return item.senses.some(s => 
           (s.meaning && s.meaning.toLowerCase().includes(searchWord)) ||
           (s.pos && s.pos.toLowerCase().includes(searchWord)) ||
@@ -499,7 +525,12 @@
       if (currentSort === 'abc') {
         list.sort((a, b) => a.word.localeCompare(b.word, 'en', { sensitivity: 'base' }));
       } else {
-        list.sort((a, b) => a.order - b.order);
+        // 登録順（割り振った番号順）。未割り当ては後ろに表示
+        list.sort((a, b) => {
+          const idA = a.id !== null ? a.id : (1000000 + a.order);
+          const idB = b.id !== null ? b.id : (1000000 + b.order);
+          return idA - idB;
+        });
       }
 
       document.getElementById('count-display').textContent = `${list.length} 語 表示中`;
@@ -515,7 +546,11 @@
         const card = document.createElement('article');
         card.className = 'word-card';
 
-        const previewHtml = item.senses.map((s, idx) => `
+        const idBadge = item.id !== null
+          ? `<span class="word-id">#${escapeHtml(String(Math.floor(item.id)))}</span>`
+          : '';
+
+        const previewHtml = item.senses.map((s) => `
           <span class="preview-item">
             ${s.pos ? `<span class="preview-pos">${escapeHtml(s.pos)}</span>` : ''}
             <span>${escapeHtml(s.meaning)}</span>
@@ -536,6 +571,7 @@
         card.innerHTML = `
           <div class="card-header">
             <div class="card-title-area">
+              ${idBadge}
               <span class="word-text">${escapeHtml(item.word)}</span>
               <div class="preview-meanings">${previewHtml}</div>
             </div>
